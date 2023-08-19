@@ -1,43 +1,40 @@
-import {useState} from 'react';
-import {StyleSheet, Text, Dimensions} from 'react-native';
+import React from 'react';
+
+import {StyleSheet, Text} from 'react-native';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import Animated, {
   FadeIn,
-  Layout,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+import {clockRadius, screenCenter} from '../config';
 
-const RADIUS = 120;
+interface BeatIndicatorProps {
+  isDownBeat: boolean;
+  beatNumber: number;
+}
 
-const SCREEN_CENTER = {
-  x: Dimensions.get('window').width / 2,
-  y: Dimensions.get('window').height / 2,
-};
-
-const BeatScale = {
+const beatScale = {
   weak: 1,
   strong: 1.1,
 };
 
-const BeatSize = 50;
+const beatSize = 50;
 
 export default function BeatIndicator({
   isDownBeat,
   beatNumber,
-}: {
-  isDownBeat: boolean;
-  beatNumber: number;
-}): JSX.Element {
+}: BeatIndicatorProps): JSX.Element {
   const isStrongBeat = useSharedValue(isDownBeat);
 
   const theta = Math.PI / 2 - (Math.PI / 6) * beatNumber;
-  const sizeDelta = BeatSize / 2;
+
+  const sizeDelta = beatSize / 2;
 
   const screenPosition = {
-    x: RADIUS * Math.cos(theta) + SCREEN_CENTER.x - sizeDelta,
-    y: -RADIUS * Math.sin(theta) + SCREEN_CENTER.y - sizeDelta,
+    x: clockRadius * Math.cos(theta) + screenCenter.x - sizeDelta,
+    y: -clockRadius * Math.sin(theta) + screenCenter.y - sizeDelta,
   };
 
   const positionStyle = StyleSheet.create({
@@ -54,7 +51,7 @@ export default function BeatIndicator({
       transform: [
         {
           scale: withSpring(
-            isStrongBeat.value ? BeatScale.strong : BeatScale.weak,
+            isStrongBeat.value ? beatScale.strong : beatScale.weak,
           ),
         },
       ],
@@ -71,7 +68,6 @@ export default function BeatIndicator({
     <GestureDetector gesture={tap}>
       <Animated.View
         entering={FadeIn.duration(150)}
-        layout={Layout}
         style={[animatedStyle, styles.beat, positionStyle.position]}>
         <Text>{beatNumber}</Text>
       </Animated.View>
@@ -81,9 +77,9 @@ export default function BeatIndicator({
 
 const styles = StyleSheet.create({
   beat: {
-    width: BeatSize,
-    height: BeatSize,
-    borderRadius: BeatSize / 2,
+    width: beatSize,
+    height: beatSize,
+    borderRadius: beatSize / 2,
 
     display: 'flex',
     alignItems: 'center',
