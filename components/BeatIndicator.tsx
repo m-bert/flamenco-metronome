@@ -61,10 +61,6 @@ export default function BeatIndicator({
     };
   });
 
-  setInterval(() => {
-    isStrongBeat.value = !isStrongBeat.value;
-  }, 250);
-
   const tap = Gesture.Tap()
     .onEnd(() => {
       isStrongBeat.value = !isStrongBeat.value;
